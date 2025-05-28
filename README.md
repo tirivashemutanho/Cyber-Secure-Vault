@@ -4,7 +4,7 @@
 
 ---
 
-## 🚩 Problems This Project Solves
+##  Problems This Project Solves
 
 - **Unsafe File Sharing:** Traditional file transfer systems often lack malware scanning and encryption, exposing users to threats.
 - **Data Breaches:** Files stored on the server are encrypted at rest, reducing the risk of data leaks if the server is compromised.
@@ -14,7 +14,7 @@
 
 ---
 
-## 🔒 Key Features
+##  Key Features
 
 - **User Registration & Login:** Secure authentication using JWT tokens.
 - **File Upload:** Upload files through a web interface.
@@ -28,7 +28,7 @@
 
 ---
 
-## 🛠️ How It Works
+## How It Works
 
 1. **User registers and logs in** via the web interface.
 2. **User uploads a file:**  
@@ -42,7 +42,7 @@
 
 ---
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### Prerequisites
 
@@ -113,7 +113,7 @@ Cyber-Secure-Vault/
 
 ---
 
-## ⚡ Security Notes
+##  Security Notes
 
 - **Encryption key** is generated at runtime for demo purposes. In production, store it securely (e.g., in environment variables).
 - **ClamAV** must be kept up to date for effective malware scanning.
@@ -122,19 +122,16 @@ Cyber-Secure-Vault/
 
 ---
 
-## 📜 License
+##  License
 
 This project is licensed under the Apache-2.0 License.
 
 ---
 
-## 🌐 Live Demo
-
-> _Add a link here if you deploy the app online!_
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change.
 
