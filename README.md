@@ -111,7 +111,6 @@ Cyber-Secure-Vault/
 └── README.md
 ```
 
----
 
 ##  Security Notes
 
