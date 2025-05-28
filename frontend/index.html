@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Secure File Transfer - Hacker Edition</title>
+    <style>
+      body {
+        background: #0a0a0a;
+        color: #00ff00;
+        font-family: 'Fira Mono', 'Consolas', 'Courier New', monospace;
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+      }
+      h1, h2, h3 {
+        color: #00ff00;
+        text-shadow: 0 0 8px #00ff00, 0 0 2px #ff0000;
+        letter-spacing: 2px;
+      }
+      .section {
+        background: rgba(10, 10, 10, 0.95);
+        border: 2px solid #00ff00;
+        box-shadow: 0 0 20px #00ff00, 0 0 10px #ff0000 inset;
+        border-radius: 10px;
+        margin: 30px 0;
+        padding: 30px 40px;
+        width: 350px;
+        max-width: 90vw;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      label {
+        color: #ff0000;
+        font-weight: bold;
+        margin-top: 10px;
+        margin-bottom: 2px;
+        letter-spacing: 1px;
+      }
+      input[type="text"], input[type="password"], input[type="file"] {
+        background: #111;
+        color: #00ff00;
+        border: 1px solid #00ff00;
+        border-radius: 4px;
+        padding: 8px 10px;
+        margin-bottom: 10px;
+        width: 100%;
+        font-size: 1em;
+        font-family: inherit;
+        outline: none;
+        box-shadow: 0 0 5px #00ff00 inset;
+      }
+      button {
+        background: #0a0a0a;
+        color: #00ff00;
+        border: 2px solid #ff0000;
+        border-radius: 4px;
+        padding: 8px 20px;
+        font-size: 1em;
+        font-family: inherit;
+        font-weight: bold;
+        cursor: pointer;
+        margin-top: 10px;
+        box-shadow: 0 0 8px #ff0000, 0 0 2px #00ff00;
+        transition: background 0.2s, color 0.2s;
+      }
+      button:hover {
+        background: #ff0000;
+        color: #0a0a0a;
+        box-shadow: 0 0 16px #ff0000, 0 0 4px #00ff00;
+      }
+      .msg {
+        margin: 10px 0 0 0;
+        color: #ff0000;
+        text-shadow: 0 0 4px #ff0000;
+        min-height: 20px;
+        font-size: 1em;
+      }
+      ul#files {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        width: 100%;
+      }
+      ul#files li {
+        margin: 8px 0;
+      }
+      ul#files a {
+        color: #00ff00;
+        text-decoration: underline;
+        font-weight: bold;
+        text-shadow: 0 0 4px #00ff00;
+        cursor: pointer;
+        transition: color 0.2s;
+      }
+      ul#files a:hover {
+        color: #ff0000;
+        text-shadow: 0 0 8px #ff0000;
+      }
+      .divider {
+        width: 100vw;
+        height: 2px;
+        background: linear-gradient(90deg, #00ff00, #ff0000, #00ff00);
+        margin: 30px 0;
+        box-shadow: 0 0 8px #00ff00, 0 0 4px #ff0000;
+      }
+    </style>
+</head>
+<body>
+  <h1>💀 Secure File Transfer 💀</h1>
+
+  <div class="section" id="registerSection">
+    <h2>Register</h2>
+    <label for="regUsername">Username</label>
+    <input id="regUsername" type="text" placeholder="Username" />
+    <label for="regPassword">Password</label>
+    <input id="regPassword" type="password" placeholder="Password" />
+    <button onclick="register()">Register</button>
+    <div class="msg" id="registerMsg"></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section" id="loginSection">
+    <h2>Login</h2>
+    <label for="username">Username</label>
+    <input id="username" type="text" placeholder="Username" />
+    <label for="password">Password</label>
+    <input id="password" type="password" placeholder="Password" />
+    <button onclick="login()">Login</button>
+    <div class="msg" id="loginMsg"></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section" id="uploadSection" style="display:none;">
+    <h2>Upload File</h2>
+    <input type="file" id="fileInput" />
+    <button onclick="uploadFile()">Upload</button>
+    <div class="msg" id="uploadMsg"></div>
+    <h3>Your Files</h3>
+    <ul id="files"></ul>
+  </div>
+
+<script>
+  let token = '';
+
+  function register() {
+    const username = document.getElementById('regUsername').value;
+    const password = document.getElementById('regPassword').value;
+    fetch('/register', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({username, password})
+    }).then(res => res.json())
+    .then(data => {
+      if(data.msg === 'User created'){
+        document.getElementById('registerMsg').innerText = 'Registration successful! Please log in.';
+      } else {
+        document.getElementById('registerMsg').innerText = data.msg || 'Registration failed';
+      }
+    });
+  }
+
+  function login() {
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+
+    fetch('/login', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({username, password})
+    }).then(res => res.json())
+    .then(data => {
+      if(data.access_token){
+        token = data.access_token;
+        document.getElementById('loginMsg').innerText = 'Login successful!';
+        document.getElementById('uploadSection').style.display = 'flex';
+        document.getElementById('loginSection').style.display = 'none';
+        document.getElementById('registerSection').style.display = 'none';
+        loadFiles();
+      } else {
+        document.getElementById('loginMsg').innerText = data.msg || 'Login failed';
+      }
+    });
+  }
+
+  function uploadFile() {
+    const fileInput = document.getElementById('fileInput');
+    if(fileInput.files.length === 0){
+      alert('Select a file first!');
+      return;
+    }
+    const file = fileInput.files[0];
+    const formData = new FormData();
+    formData.append('file', file);
+
+    fetch('/upload', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + token },
+      body: formData
+    })
+    .then(async res => {
+      let data;
+      try {
+        data = await res.json();
+      } catch (e) {
+        document.getElementById('uploadMsg').innerText = 'Upload failed: Invalid server response.';
+        return;
+      }
+      if (data.trace) {
+        document.getElementById('uploadMsg').innerText = (data.msg || 'Upload failed') + '\n' + data.error + '\n' + data.trace;
+      } else {
+        document.getElementById('uploadMsg').innerText = data.msg || 'Upload failed';
+      }
+      loadFiles();
+    });
+  }
+
+  function loadFiles() {
+    fetch('/files', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    }).then(res => res.json())
+    .then(files => {
+      const list = document.getElementById('files');
+      list.innerHTML = '';
+      files.forEach(f => {
+        const li = document.createElement('li');
+        const link = document.createElement('a');
+        link.href = '#';
+        link.innerText = f;
+        link.onclick = function(e) {
+          e.preventDefault();
+          downloadFile(f);
+        };
+        li.appendChild(link);
+        list.appendChild(li);
+      });
+    });
+  }
+
+  function downloadFile(filename) {
+    fetch('/download/' + encodeURIComponent(filename), {
+      headers: { 'Authorization': 'Bearer ' + token }
+    })
+    .then(res => {
+      if (!res.ok) throw new Error('Download failed');
+      return res.blob();
+    })
+    .then(blob => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    })
+    .catch(err => {
+      alert('Download failed: ' + err.message);
+    });
+  }
+</script>
+</body>
+</html> 
